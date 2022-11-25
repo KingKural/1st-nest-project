@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query } from "@nestjs/common";
 import { PersonDto } from "./dtos/person.dto";
 import { Person } from "./person.entity";
 import { PersonsService } from "./person.service";
@@ -9,7 +9,7 @@ export class PersonsController {
     constructor(private readonly personsService: PersonsService) { }
     @Get()
     getAll(@Query('name') searchName: string): Array<Person> {
-        return this.personsService.getAll();
+        return this.personsService.getAll(searchName);
     }
 
     @Post()
@@ -19,8 +19,8 @@ export class PersonsController {
     }
 
     @Put(':id')
-    update(@Param('id') id: number, @Body() updateData: Person) {
-        return this.personsService.changeIt(id,updateData)
+    update(@Param('id') id: number, @Body() updatePersonDto: PersonDto): Person {
+        return this.personsService.update(id,updatePersonDto.name, updatePersonDto.phone)
     }
 
     @Get(':id')

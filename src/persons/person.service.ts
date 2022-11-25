@@ -1,4 +1,5 @@
 import { Body, Injectable } from "@nestjs/common";
+import { NotFoundException } from "src/config/not-found.exception";
 import { Person } from "./person.entity";
 
 @Injectable()
@@ -8,58 +9,66 @@ export class PersonsService {
         new Person(11, "Mary Jane", 123456),
         new Person(12, "Gwen Stacy", 234567),
         new Person(13, "Liz Allen", 345678),
-        new Person(14, "Felicia Hardy", 456789),
+        new Person(14, 'Felicia Hardy', 456789),
     );
 
     generateId() {
         let lastPerson = this.listOfPersons[this.listOfPersons.length - 1];
-        return lastPerson.id + 1;
+        return lastPerson.getId() + 1;
     }
 
-    getAll(): Array<Person> {
+    getAll(searchName: string): Array<Person> {
+        if (searchName != null) {
+            let result = [];
+
+            for (let person of this.listOfPersons) {
+                if (person.getName() == searchName) {
+                    result.push(person);
+                }
+            }
+
+            return result;
+        }
+
         return this.listOfPersons;
     }
 
-    add(name: string, phone:number): Person {
+    add(name: string, phone: number): Person {
         const id = this.generateId();
-        const newPerson = new Person(id,name,phone);
+        const newPerson = new Person(id, name, phone);
 
         this.listOfPersons.push(newPerson);
         return newPerson;
     }
 
-    changeIt(id: number, updateData: Person): Person {
-
+    update(id: number, name: string, phone: number): Person {
 
         for (let person of this.listOfPersons) {
-            if (person.id == id) {
-                person.name = updateData.name;
-                person.phone = updateData.phone;
-                return person
+            if (id == person.getId()) {
+                person.changeName(name);
+                person.changePhoneNumber(phone);
+                return person;
             }
         }
-        return null;
+
     }
 
     get(id: number): Person {
 
         for (let person of this.listOfPersons) {
-            if (person.id == id) {
+            if (person.getId() == id) {
                 return person
 
             }
         }
-        return null;
+        throw new NotFoundException(`Person with id ${id} not found!`);
     }
 
 
-    remove(id: number): Array<Person> {
-
-        let nada: string = "This Person doesnt exist"
-
-        for (let pos: number = 0; pos < this.listOfPersons.length - 1; pos++) {
-            if (id == this.listOfPersons[pos].id) { this.listOfPersons.splice(pos, 1); return }
+    remove(id: number): void {
+        for (let pos: number = 0; pos < this.listOfPersons.length; pos++) {
+            if (id == this.listOfPersons[pos].getId()) { this.listOfPersons.splice(pos, 1); return }
         }
-        return null;
+        throw new NotFoundException(`Person with id ${id} not found!`);
     }
 }
