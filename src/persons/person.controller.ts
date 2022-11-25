@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
-import { Person } from "./person.model";
-import { PersonsService } from "./persons.service";
+import { Person } from "./person.entity";
+import { PersonsService } from "./person.service";
 
 @Controller('persons')
 export class PersonsController {
@@ -12,9 +12,9 @@ export class PersonsController {
     }
 
     @Post()
-    create(@Body() newPerson: Person): Person {
-        console.log(newPerson);
-        return this.personsService.add(newPerson);
+    create(@Body() createPersonDto: PersonDto): Person {
+        console.log(createPersonDto);
+        return this.personsService.add(createPersonDto.name, createPersonDto.phone);
     }
 
     @Put(':id')

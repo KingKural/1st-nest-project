@@ -1,35 +1,15 @@
 import { Body, Injectable } from "@nestjs/common";
-import { Person } from "./person.model";
+import { Person } from "./person.entity";
 
 @Injectable()
 export class PersonsService {
 
-    listOfPersons: Array<Person> = [
-        {
-            id: 11,
-            name: "Mary Jane",
-            phone: 123456
-
-        },
-        {
-            id: 12,
-            name: "Gwen Stacy",
-            phone: 234567
-
-        },
-        {
-            id: 13,
-            name: "Felicia hardy",
-            phone: 345678
-
-        },
-        {
-            id: 14,
-            name: "Liz Allen",
-            phone: 456789
-
-        },
-    ];
+    listOfPersons: Array<Person> = new Array(
+        new Person(11, "Mary Jane", 123456),
+        new Person(12, "Gwen Stacy", 234567),
+        new Person(13, "Liz Allen", 345678),
+        new Person(14, "Felicia Hardy", 456789),
+    );
 
     generateId() {
         let lastPerson = this.listOfPersons[this.listOfPersons.length - 1];
@@ -40,13 +20,15 @@ export class PersonsService {
         return this.listOfPersons;
     }
 
-    add(newPerson: Person): Person {
-        newPerson.id = this.generateId();
+    add(name: string, phone:number): Person {
+        const id = this.generateId();
+        const newPerson = new Person(id,name,phone);
+
         this.listOfPersons.push(newPerson);
         return newPerson;
     }
 
-    changeIt(id: number, updateData:Person): Person {
+    changeIt(id: number, updateData: Person): Person {
 
 
         for (let person of this.listOfPersons) {
@@ -56,6 +38,7 @@ export class PersonsService {
                 return person
             }
         }
+        return null;
     }
 
     get(id: number): Person {
@@ -66,6 +49,7 @@ export class PersonsService {
 
             }
         }
+        return null;
     }
 
 
@@ -76,5 +60,6 @@ export class PersonsService {
         for (let pos: number = 0; pos < this.listOfPersons.length - 1; pos++) {
             if (id == this.listOfPersons[pos].id) { this.listOfPersons.splice(pos, 1); return }
         }
+        return null;
     }
 }
