@@ -1,6 +1,8 @@
 import { IsInt, IsString } from "class-validator";
 
-export class PersonDto{
+
+export class PersonDto {
+
     @IsString()
     name: string;
 
